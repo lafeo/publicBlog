@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="sheet.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+    <title>Document</title>
+</head>
+<body>
+    <div class="side_bar">
+        <div onload="startLoop()" id="online">
+            
+        </div>
+        <div id="user">
+            <img height="108px" src="user.png" style="margin: 24px;">
+            <input id="username" name="text" type="text" placeholder="Username">
+            <input id="password" name="username" type="text" placeholder="Password">
+            <button id="inputButton" onclick="login()" style="width: 48px;">Chat</button>
+        </div>
+        <div class="footerSide" style="text-align: center">
+          <a href="https://github.com/lafeo/publicBlog" target="about:blank"><i style="font-size: 24pt" class="fab fa-github"></i></a>
+        </div>
+    </div>
+    <div class="mess_bar">
+        <div id="ml" style="width: 100%; height: calc(100% - 128px); overflow: scroll;">
+            
+        </div>
+        <div style="position: fixed; bottom: 2px; width: calc(100% - 258px);">
+                <textarea id="txtarea" style="width: calc(100% - 156px);" placeholder="Type and share to the global Chat">
+                    </textarea>
+                    <button class="mess_barEDIT">Attach files</button>
+                    <button class="mess_barEDIT" onclick="sendMes()">Send</button>
+        </div>
+        
+    </div>
+</body>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js"></script>
+
+<script>
+  var socket = io('https://limitless-thicket-21546.herokuapp.com/');
+  document.getElementById("online").innerHTML='<img height="122px" src="redStatus.svg" style="margin: 30px;"> Server is OFFLINE';
+  socket.on('connect', () => {
+  console.log(socket.connected); // true
+  document.getElementById("online").innerHTML='<img height="122px" src="greenStatus.svg" style="margin: 30px;"> Server is ONLINE'
+  
+});
+socket.on('disconnect', () => {
+    document.getElementById("online").innerHTML='<img height="122px" src="redStatus.svg" style="margin: 30px;"> Server is OFFLINE';
+});
+</script>
+
+<script src="https://www.gstatic.com/firebasejs/5.9.1/firebase-app.js"></script>
+
+<!-- Add additional services that you want to use -->
+<script src="https://www.gstatic.com/firebasejs/5.9.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/5.9.1/firebase-database.js"></script>
+<script src="https://www.gstatic.com/firebasejs/5.9.1/firebase-firestore.js"></script>
+<script>
+    
+  // Initialize Firebase
+  var config = {
+    apiKey: "AIzaSyD-S7odfAlSeBqXDrXdsHb_ATSgSN2SBmM",
+    authDomain: "publicblog-lafeo.firebaseapp.com",
+    databaseURL: "https://publicblog-lafeo.firebaseio.com",
+    projectId: "publicblog-lafeo",
+    storageBucket: "publicblog-lafeo.appspot.com",
+    messagingSenderId: "541917185894"
+  };
+  firebase.initializeApp(config);
+
+  var database = firebase.firestore();
+  var cuid = null;
+  function writeUserData(userId, password) {
+  database.collection('users').doc(userId).set({
+    username: userId,
+    password: password,
+  });
+  cuid = userId;
+  alert("Logged in, "+cuid);
+}
+function uuid() {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+  });
+}
+function login(){
+    var userId = document.getElementById('username').value;
+    var passsword = document.getElementById('password').value;
+    writeUserData(userId, passsword);
+}
+function sendMessage(msg){
+    if(cuid==null){
+        alert("Please log in and try again...");
+        return;
+    }
+    firebase.database().ref('posts/' + new Date().getTime()).set({
+    user: cuid,
+    content: msg
+  });
+}
+
+var list = [];
+
+var myRef = firebase.database().ref('posts');
+myRef.on('value', function(snapshot) {
+  console.log(snapshot.val());
+  var obj = snapshot.val();
+  var arr = Object.keys(obj);
+  list = [];
+  for(var i=0;i<arr.length;i++){
+      var o = obj[arr[i]];
+      o.id = arr[i];
+      list.push(o);
+  }
+  console.log(list);
+  reload();
+});
+
+function reload(){
+    var f = '<div class="msg"><span class="sender">%sender%</span><br>%text%</div>';
+    var d = document.getElementById('ml');
+    var x = "";
+    for(var i=list.length-1;i>=0;i--){
+        x+=f.replace("%sender%",list[i].user).replace("%text%",list[i].content);
+    }
+    d.innerHTML = x;
+}
+
+function sendMes(){
+    var msg = document.getElementById("txtarea").value;
+    sendMessage(msg);
+}
+function startLoop(){
+        var firebaseRef = new Firebase('https://publicblog-lafeo.firebaseio.com');
+        firebaseRef.child('.info/connected').on('value', function(connectedSnap) {
+            if (connectedSnap.val() === true) {
+                getElementById("online").innerHTML='<img height="122px" src="greenStatus.svg" style="margin: 30px;"> Server is ONLINE'
+  } else {
+    /* we're disconnected! */
+    getElementById("online").innerHTML='<img height="122px" src="redStatus.svg" style="margin: 30px;"> Server is OFFLINE'
+  }
+});
+        setTimeout(this, 5000
+        );
+
+    }
+</script>
+</html>
