@@ -14,10 +14,10 @@
             
         </div>
         <div id="user">
-            <img height="108px" src="user.png" style="margin: 24px;">
+            <img id="userPNG" src="user.png">
             <input id="username" name="text" type="text" placeholder="Username">
             <input id="password" name="username" type="text" placeholder="Password">
-            <button id="inputButton" onclick="login()" style="width: 48px;">Chat</button>
+            <button id="inputButton" onclick="login()">Chat</button>
         </div>
         <div class="footerSide" style="text-align: center">
           <a href="https://github.com/lafeo/publicBlog" target="about:blank"><i style="font-size: 24pt" class="fab fa-github"></i></a>
@@ -27,8 +27,8 @@
         <div id="ml" style="width: 100%; height: calc(100% - 128px); overflow: scroll;">
             
         </div>
-        <div style="position: fixed; bottom: 2px; width: calc(100% - 258px);">
-                <textarea id="txtarea" style="width: calc(100% - 156px);" placeholder="Type and share to the global Chat">
+        <div id="abSENDER">
+                <textarea id="txtarea" placeholder="Type and share to the global Chat">
                     </textarea>
                     <button class="mess_barEDIT">Attach files</button>
                     <button class="mess_barEDIT" onclick="sendMes()">Send</button>
@@ -41,14 +41,14 @@
 
 <script>
   var socket = io('https://limitless-thicket-21546.herokuapp.com/');
-  document.getElementById("online").innerHTML='<img height="122px" src="redStatus.svg" style="margin: 30px;"> Server is OFFLINE';
+  document.getElementById("online").innerHTML='<img id="onlinePIC" src="redStatus.svg"> Server is OFFLINE';
   socket.on('connect', () => {
   console.log(socket.connected); // true
-  document.getElementById("online").innerHTML='<img height="122px" src="greenStatus.svg" style="margin: 30px;"> Server is ONLINE'
+  document.getElementById("online").innerHTML='<img id="onlinePIC" src="greenStatus.svg"> Server is ONLINE'
   
 });
 socket.on('disconnect', () => {
-    document.getElementById("online").innerHTML='<img height="122px" src="redStatus.svg" style="margin: 30px;"> Server is OFFLINE';
+    document.getElementById("online").innerHTML='<img id="onlinePIC" src="redStatus.svg"> Server is OFFLINE';
 });
 </script>
 
@@ -138,10 +138,10 @@ function startLoop(){
         var firebaseRef = new Firebase('https://publicblog-lafeo.firebaseio.com');
         firebaseRef.child('.info/connected').on('value', function(connectedSnap) {
             if (connectedSnap.val() === true) {
-                getElementById("online").innerHTML='<img height="122px" src="greenStatus.svg" style="margin: 30px;"> Server is ONLINE'
+                getElementById("online").innerHTML='<img id="onlinePIC"  src="greenStatus.svg"> Server is ONLINE'
   } else {
     /* we're disconnected! */
-    getElementById("online").innerHTML='<img height="122px" src="redStatus.svg" style="margin: 30px;"> Server is OFFLINE'
+    getElementById("online").innerHTML='<img id="onlinePIC" src="redStatus.svg"> Server is OFFLINE'
   }
 });
         setTimeout(this, 5000
