@@ -1,3 +1,5 @@
-WELCOME TO GLOBAL CHAT
+**WELCOME TO GLOBAL CHAT**
 
-_Global Chat is a simple, fast, some what anonymous chatting application._
+_Global Chat is a simple, fast, some what anonymous web based chatting site._
+
+
